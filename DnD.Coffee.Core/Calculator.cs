@@ -1,4 +1,6 @@
-﻿namespace DnD.Coffee.Core;
+﻿using ConcurrentCollections;
+
+namespace DnD.Coffee.Core;
 
 public static class Calculator
 {
