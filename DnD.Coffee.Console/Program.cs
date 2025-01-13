@@ -1,4 +1,5 @@
 ﻿using DnD.Coffee.Core;
+using System.Diagnostics;
 
 namespace DnD.Coffee.ConsoleApp;
 
@@ -8,7 +9,7 @@ public class Program
     {
         // Example input
         int warlockSlotNumberTotal = 2;
-        int warlockSlotNumberCurrent = 0;
+        int warlockSlotNumberCurrent = 1;
         int warlockSlotLevel = 2;
         int sorceryPointsTotal = 5;
         int sorceryPointsCurrent = 0;
@@ -19,6 +20,9 @@ public class Program
         // Configurable minimum resource requirements
         int minimumSorceryPoints = 5; // Minimum Sorcery Points at the end of rest
         int minimumWarlockSlots = 2;  // Minimum Warlock slots at the end of rest
+
+        var timer = new Stopwatch();
+        timer.Start();
 
         var results = Calculator.CalculateSpellSlots(
             warlockSlotNumberTotal,
@@ -32,11 +36,13 @@ public class Program
             minimumSorceryPoints,
             minimumWarlockSlots);
 
-        Console.WriteLine($"Completed. Found {results.Count} possible combinations:\n");
+        timer.Stop();
+        Console.WriteLine($"Completed. Found {results.Count} possible combinations in {timer.Elapsed}\n");
 
         foreach (var result in results)
         {
             Console.WriteLine(result);
         }
+        Console.ReadKey();
     }
 }
