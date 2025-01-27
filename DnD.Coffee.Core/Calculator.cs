@@ -41,7 +41,7 @@ public static class Calculator
         StateCache.Clear();
 
         // Verifica se è possibile creare almeno uno slot incantesimo
-        bool canGenerateSlots = CanGenerateAtLeastOneSlot(
+        var canGenerateSlots = CanGenerateAtLeastOneSlot(
             warlockSlotNumberTotal,
             warlockSlotLevel,
             sorceryPointsTotal,
@@ -99,7 +99,7 @@ public static class Calculator
         int sleepHours,
         int minimumSorceryPoints)
     {
-        int potentialSorceryPoints = (sleepHours * warlockSlotNumberTotal * warlockSlotLevel)
+        var potentialSorceryPoints = (sleepHours * warlockSlotNumberTotal * warlockSlotLevel)
             + (pactKeeperRod ? Constants.PactRodSpellSlotsGain * warlockSlotLevel : 0)
             + (bloodWellVial ? Math.Min(Constants.BloodVialSorceryPointsGain, sorceryPointsTotal - sorceryPointsCurrent) : 0);
 
@@ -157,7 +157,7 @@ public static class Calculator
             {
                 var newState = (CoffeeBreakState)state.Clone();
                 newState.WarlockSlots -= 1;
-                int pointsGained = warlockSlotLevel;
+                var pointsGained = newState.SorceryPoints + warlockSlotLevel > sorceryPointsTotal ? sorceryPointsTotal - newState.SorceryPoints : warlockSlotLevel;
                 newState.SorceryPoints = Math.Min(newState.SorceryPoints + pointsGained, sorceryPointsTotal);
 
                 newState.Actions.Add(new CoffeeBreakActions
@@ -181,13 +181,13 @@ public static class Calculator
         }
 
         // 2. Converti punti stregoneria in slot incantesimo universali
-        for (int level = 5; level >= 1; level--)
+        for (var level = 5; level >= 1; level--)
         {
             int cost = Constants.GetSpellSlotCost(level);
             if (state.SorceryPoints - cost >= 0)
             {
-                int capturedLevel = level;
-                int capturedCost = cost;
+                var capturedLevel = level;
+                var capturedCost = cost;
 
                 tasks.Add(Task.Run(() =>
                 {
@@ -239,7 +239,7 @@ public static class Calculator
         {
             tasks.Add(Task.Run(() =>
             {
-                int pointsToRecover = Math.Min(
+                var pointsToRecover = Math.Min(
                     Constants.BloodVialSorceryPointsGain,
                     sorceryPointsTotal - state.SorceryPoints);
                 var newState = (CoffeeBreakState)state.Clone();
@@ -349,15 +349,16 @@ public static class Calculator
         }
 
         // Tenta di spendere gli slot ripristinati, se rimangono entro il minimo di Punti Stregoneria e Slot da Warlock
-        int maxSpendableWarlockSlots = state.WarlockSlots - minimumWarlockSlots;
+        var maxSpendableWarlockSlots = state.WarlockSlots - minimumWarlockSlots;
 
-        for (int slotsToSpend = maxSpendableWarlockSlots; slotsToSpend >= 0; slotsToSpend--)
+        for (var slotsToSpend = maxSpendableWarlockSlots; slotsToSpend >= 0; slotsToSpend--)
         {
             var newState = (CoffeeBreakState)state.Clone();
             if (slotsToSpend > 0)
             {
                 newState.WarlockSlots -= slotsToSpend;
-                int sorceryPointsGained = slotsToSpend * warlockSlotLevel;
+                var sorceryPointsGained = slotsToSpend * warlockSlotLevel;
+                sorceryPointsGained = newState.SorceryPoints + sorceryPointsGained > sorceryPointsTotal ? sorceryPointsTotal - newState.SorceryPoints : sorceryPointsGained;
                 newState.SorceryPoints = Math.Min(newState.SorceryPoints + sorceryPointsGained, sorceryPointsTotal);
 
                 newState.Actions.Add(new CoffeeBreakActions
@@ -398,12 +399,12 @@ public static class Calculator
         CoffeeBreakState state,
         int minimumSorceryPoints)
     {
-        bool conversionMade = true;
+        var conversionMade = true;
         while (conversionMade)
         {
             conversionMade = false;
 
-            for (int level = 5; level >= 1; level--)
+            for (var level = 5; level >= 1; level--)
             {
                 int cost = Constants.GetSpellSlotCost(level);
                 if (state.SorceryPoints - cost >= minimumSorceryPoints)
