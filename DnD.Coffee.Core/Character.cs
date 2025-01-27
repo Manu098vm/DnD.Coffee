@@ -1,9 +1,9 @@
 ﻿namespace DnD.Coffee.Core;
 
-public class Character(int warlockLevel, int sorcererLevel)
+public class Character
 {
-    public int WarlockLevel { get; init; } = warlockLevel;
-    public int SorcererLevel { get; init; } = sorcererLevel;
+    public required int WarlockLevel { get; init; }
+    public required int SorcererLevel { get; init; }
 
     public int GetWarlockSlotNumberTotal() => WarlockLevel switch
     {

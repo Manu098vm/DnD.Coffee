@@ -9,104 +9,35 @@ public class Program
     {
         Console.WriteLine($"DnD.Coffee 0.1 by Manu098vm {Environment.NewLine}");
 
-        int sorcererLevel = 0;
-        int warlockLevel = 0;
-        int warlockSlotNumberCurrent = 0;
-        int sorceryPointsCurrent = 0;
-        bool hasPactKeeperRod = false;
-        bool hasBloodWellVial = false;
-        int sleepHoursTotal = 0;
-        int minimumSorceryPoints = 0;
-        int minimumWarlockSlots = 0;
+        int warlockLevel = GetValidatedInput("What's your level in the Warlock class?", 3, 20);
+        if (warlockLevel == -1) return;
 
-        Character character;
+        int sorcererLevel = GetValidatedInput("What's your level in the Sorcerer class?", 2, 20);
+        if (sorcererLevel == -1) return;
 
-        try
+        Character character = new()
         {
-            Console.WriteLine("What's your level in the Sorcerer class?");
-            sorcererLevel = int.Parse(Console.ReadLine()!);
+            WarlockLevel = warlockLevel,
+            SorcererLevel = sorcererLevel
+        };
 
-            if (sorcererLevel < 2 || sorcererLevel > 20)
-            {
-                Console.WriteLine("Sorcerer level must be between 2 and 20.");
-                WaitForInputToExit();
-                return;
-            }
+        int warlockSlotNumberCurrent = GetValidatedInput($"How many Warlock slots do you have left? (0 to {character.GetWarlockSlotNumberTotal()})", 0, character.GetWarlockSlotNumberTotal());
+        if (warlockSlotNumberCurrent == -1) return;
 
-            Console.WriteLine("What's your level in the Warlock class?");
-            warlockLevel = int.Parse(Console.ReadLine()!);
+        int sorceryPointsCurrent = GetValidatedInput($"How many Sorcery Points do you have left? (0 to {character.GetSorceryPointsTotal()})", 0, character.GetSorceryPointsTotal());
+        if (sorceryPointsCurrent == -1) return;
 
-            if (warlockLevel < 3 || warlockLevel > 20)
-            {
-                Console.WriteLine("Warlock level must be between 3 and 20.");
-                WaitForInputToExit();
-                return;
-            }
+        bool hasPactKeeperRod = GetYesNoInput("Do you have the Pact Keeper Rod? (Y/n)");
+        bool hasBloodWellVial = GetYesNoInput("Do you have the Blood Well Vial? (Y/n)");
 
-            character = new Character(warlockLevel, sorcererLevel);
+        int sleepHoursTotal = GetValidatedInput("How many hours is your character going to rest?", 0, int.MaxValue);
+        if (sleepHoursTotal == -1) return;
 
-            Console.WriteLine("How many Warlock slots do you have left?");
-            warlockSlotNumberCurrent = int.Parse(Console.ReadLine()!);
+        int minimumWarlockSlots = GetValidatedInput($"What's the minimum number of Warlock slots you want to have left? (0 to {character.GetWarlockSlotNumberTotal()})", 0, character.GetWarlockSlotNumberTotal());
+        if (minimumWarlockSlots == -1) return;
 
-            if (warlockSlotNumberCurrent < 0 || warlockSlotNumberCurrent > character.GetWarlockSlotNumberTotal())
-            {
-                Console.WriteLine($"Warlock slots must be between 0 and {character.GetWarlockSlotNumberTotal()}.");
-                WaitForInputToExit();
-                return;
-            }
-
-            Console.WriteLine("How many Sorcery Points do you have left?");
-            sorceryPointsCurrent = int.Parse(Console.ReadLine()!);
-
-            if (sorceryPointsCurrent < 0 || sorceryPointsCurrent > character.GetSorceryPointsTotal())
-            {
-                Console.WriteLine($"Sorcery Points must be between 0 and {character.GetSorceryPointsTotal()}.");
-                WaitForInputToExit();
-                return;
-            }
-
-            Console.WriteLine("Do you have the Pact Keeper Rod? (Y/n)");
-            hasPactKeeperRod = Console.ReadLine()?.ToLower() == "y";
-
-            Console.WriteLine("Do you have the Blood Well Vial? (Y/n)");
-            hasBloodWellVial = Console.ReadLine()?.ToLower() == "y";
-
-            Console.WriteLine("How many hours is your character going to rest?");
-            sleepHoursTotal = int.Parse(Console.ReadLine()!);
-
-            if (sleepHoursTotal < 0)
-            {
-                Console.WriteLine("Sleep hours must be greater than 0.");
-                WaitForInputToExit();
-                return;
-            }
-
-            Console.WriteLine("What's the minimum number of Warlock slots you want to have left?");
-            minimumWarlockSlots = int.Parse(Console.ReadLine()!);
-
-            if (minimumWarlockSlots < 0 || minimumWarlockSlots > character.GetWarlockSlotNumberTotal())
-            {
-                Console.WriteLine($"Minimum Warlock slots must be between 0 and {character.GetWarlockSlotNumberTotal()}.");
-                WaitForInputToExit();
-                return;
-            }
-
-            Console.WriteLine("What's the minimum number of Sorcery Points you want to have left?");
-            minimumSorceryPoints = int.Parse(Console.ReadLine()!);
-
-            if (minimumSorceryPoints < 0 || minimumSorceryPoints > character.GetSorceryPointsTotal())
-            {
-                Console.WriteLine($"Minimum Sorcery Points must be between 0 and {character.GetSorceryPointsTotal()}.");
-                WaitForInputToExit();
-                return;
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"An error occurred: {ex.Message}");
-            WaitForInputToExit();
-            return;
-        }
+        int minimumSorceryPoints = GetValidatedInput($"What's the minimum number of Sorcery Points you want to have left? (0 to {character.GetSorceryPointsTotal()})", 0, character.GetSorceryPointsTotal());
+        if (minimumSorceryPoints == -1) return;
 
         var timer = new Stopwatch();
         timer.Start();
@@ -129,13 +60,18 @@ public class Program
         try
         {
             Console.WriteLine("How many results do you want to see?");
-            int resultsToShow = int.Parse(Console.ReadLine()!);
-
-            Console.WriteLine("");
-            for (int i = 0; i < resultsToShow; i++)
+            if (int.TryParse(Console.ReadLine(), out int resultsToShow))
             {
-                Console.WriteLine($"Option {i + 1}:");
-                Console.WriteLine(results.ElementAt(i));
+                Console.WriteLine("");
+                for (int i = 0; i < resultsToShow && i < results.Count; i++)
+                {
+                    Console.WriteLine($"Option {i + 1}:");
+                    Console.WriteLine(results.ElementAt(i));
+                }
+            }
+            else
+            {
+                Console.WriteLine("Invalid number of results.");
             }
         }
         catch (Exception ex)
@@ -146,9 +82,27 @@ public class Program
         WaitForInputToExit();
     }
 
-    public static void WaitForInputToExit()
+    private static int GetValidatedInput(string prompt, int min, int max)
+    {
+        Console.WriteLine(prompt);
+        if (int.TryParse(Console.ReadLine(), out int value) && value >= min && value <= max)
         {
-            Console.WriteLine("Press any key to exit...");
-            Console.ReadKey();
+            return value;
         }
+        Console.WriteLine($"Input must be between {min} and {max}.");
+        WaitForInputToExit();
+        return -1;
+    }
+
+    private static bool GetYesNoInput(string prompt)
+    {
+        Console.WriteLine(prompt);
+        return Console.ReadLine()?.ToLower() == "y";
+    }
+
+    public static void WaitForInputToExit()
+    {
+        Console.WriteLine("Press any key to exit...");
+        Console.ReadKey();
+    }
 }

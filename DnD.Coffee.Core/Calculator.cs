@@ -103,7 +103,7 @@ public static class Calculator
             + (pactKeeperRod ? Constants.PactRodSpellSlotsGain * warlockSlotLevel : 0)
             + (bloodWellVial ? Math.Min(Constants.BloodVialSorceryPointsGain, sorceryPointsTotal - sorceryPointsCurrent) : 0);
 
-        return (sorceryPointsCurrent + potentialSorceryPoints) >= (minimumSorceryPoints + Constants.Level1Cost);
+        return (sorceryPointsCurrent + potentialSorceryPoints) >= (minimumSorceryPoints + Constants.GetSpellSlotCost(1));
     }
 
     // Metodo ricorsivo con memoization e potatura
@@ -155,7 +155,7 @@ public static class Calculator
         {
             tasks.Add(Task.Run(() =>
             {
-                var newState = CoffeeBreakState.CloneState(state);
+                var newState = (CoffeeBreakState)state.Clone();
                 newState.WarlockSlots -= 1;
                 int pointsGained = warlockSlotLevel;
                 newState.SorceryPoints = Math.Min(newState.SorceryPoints + pointsGained, sorceryPointsTotal);
@@ -191,7 +191,7 @@ public static class Calculator
 
                 tasks.Add(Task.Run(() =>
                 {
-                    var newState = CoffeeBreakState.CloneState(state);
+                    var newState = (CoffeeBreakState)state.Clone();
                     newState.SorceryPoints -= capturedCost;
                     newState.Spells = newState.Spells.Clone();
                     switch (capturedLevel)
@@ -242,7 +242,7 @@ public static class Calculator
                 int pointsToRecover = Math.Min(
                     Constants.BloodVialSorceryPointsGain,
                     sorceryPointsTotal - state.SorceryPoints);
-                var newState = CoffeeBreakState.CloneState(state);
+                var newState = (CoffeeBreakState)state.Clone();
                 newState.BloodWellVialUsed = true;
                 newState.SorceryPoints += pointsToRecover;
 
@@ -270,7 +270,7 @@ public static class Calculator
         {
             tasks.Add(Task.Run(() =>
             {
-                var newState = CoffeeBreakState.CloneState(state);
+                var newState = (CoffeeBreakState)state.Clone();
                 newState.PactKeeperRodUsed = true;
                 newState.WarlockSlots = Math.Min(
                     newState.WarlockSlots + Constants.PactRodSpellSlotsGain,
@@ -296,7 +296,7 @@ public static class Calculator
         }
 
         // Avanza all'ora successiva
-        var nextState = CoffeeBreakState.CloneState(state);
+        var nextState = (CoffeeBreakState)state.Clone();
         nextState.Hour += 1;
 
         // Ripristina gli slot Warlock alla fine dell'ora
@@ -353,7 +353,7 @@ public static class Calculator
 
         for (int slotsToSpend = maxSpendableWarlockSlots; slotsToSpend >= 0; slotsToSpend--)
         {
-            var newState = CoffeeBreakState.CloneState(state);
+            var newState = (CoffeeBreakState)state.Clone();
             if (slotsToSpend > 0)
             {
                 newState.WarlockSlots -= slotsToSpend;

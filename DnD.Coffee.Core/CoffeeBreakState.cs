@@ -1,16 +1,18 @@
 ﻿namespace DnD.Coffee.Core;
 
-public class CoffeeBreakState
+public class CoffeeBreakState : ICloneable
 {
-    public int Hour;
-    public int WarlockSlots;
-    public int SorceryPoints;
-    public bool PactKeeperRodUsed;
-    public bool BloodWellVialUsed;
-    public CoffeeBreakResults Spells = null!;
-    public List<CoffeeBreakActions> Actions = null!;
+    public int Hour { get; set; }
+    public int WarlockSlots { get; set; }
+    public int SorceryPoints { get; set; }
+    public bool PactKeeperRodUsed { get; set; }
+    public bool BloodWellVialUsed { get; set; }
+    public CoffeeBreakResults Spells { get; set; } = new();
+    public List<CoffeeBreakActions> Actions { get; set; } = [];
 
-    public static CoffeeBreakState CloneState(CoffeeBreakState state)
+    public object Clone() => CloneState(this);
+
+    protected static CoffeeBreakState CloneState(CoffeeBreakState state)
     {
         return new CoffeeBreakState
         {
@@ -19,16 +21,15 @@ public class CoffeeBreakState
             SorceryPoints = state.SorceryPoints,
             PactKeeperRodUsed = state.PactKeeperRodUsed,
             BloodWellVialUsed = state.BloodWellVialUsed,
-            Spells = new CoffeeBreakResults
+            Spells = state.Spells.Clone(),
+            Actions = state.Actions.Select(action => new CoffeeBreakActions
             {
-                Level1 = state.Spells.Level1,
-                Level2 = state.Spells.Level2,
-                Level3 = state.Spells.Level3,
-                Level4 = state.Spells.Level4,
-                Level5 = state.Spells.Level5
-            },
-            Actions = new List<CoffeeBreakActions>(state.Actions)
+                ActionType = action.ActionType,
+                Hour = action.Hour,
+                SpellSlotLevel = action.SpellSlotLevel,
+                SorceryPointsChanged = action.SorceryPointsChanged,
+                WarlockSlotsChanged = action.WarlockSlotsChanged
+            }).ToList()
         };
     }
 }
-

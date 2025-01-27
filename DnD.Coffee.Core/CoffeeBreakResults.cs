@@ -36,10 +36,10 @@ public class CoffeeBreakResults
 
     public override string ToString()
     {
-        var actions = ActionsTaken is null ? "" : string.Join("\n", ActionsTaken);
+        var actions = ActionsTaken is null ? "" : string.Join($"{Environment.NewLine}", ActionsTaken);
         return $"Level 1: {Level1}, Level 2: {Level2}, Level 3: {Level3}, Level 4: {Level4}, Level 5: {Level5}, " +
                $"Remaining Sorcery Points: {RemainingSorceryPoints}, Remaining Warlock Slots: {RemainingWarlockSlots}\n" +
-               $"Actions Taken:\n{actions}\n";
+               $"Actions Taken:{Environment.NewLine}{actions}{Environment.NewLine}";
     }
 
     public override int GetHashCode() =>
