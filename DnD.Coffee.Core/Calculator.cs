@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using ConcurrentCollections;
+using System.Collections.Concurrent;
 
 namespace DnD.Coffee.Core;
 
@@ -10,7 +11,7 @@ public static class Calculator
     /// <summary>
     /// Calcola tutte le possibili combinazioni di slot incantesimo universali che possono essere creati durante il riposo.
     /// </summary>
-    public static ConcurrentBag<CoffeeBreakResults> CalculateSpellSlots(
+    public static HashSet<CoffeeBreakResults> CalculateSpellSlots(
         int warlockSlotNumberTotal,
         int warlockSlotNumberCurrent,
         int warlockSlotLevel,
@@ -23,7 +24,7 @@ public static class Calculator
         int minimumWarlockSlots)
     {
         if (sleepHours < 1)
-            return new ConcurrentBag<CoffeeBreakResults>();
+            return new HashSet<CoffeeBreakResults>();
 
         StateCache.Clear();
 
@@ -39,10 +40,10 @@ public static class Calculator
             minimumSorceryPoints);
 
         if (!canGenerateSlots)
-            return new ConcurrentBag<CoffeeBreakResults>();
+            return new HashSet<CoffeeBreakResults>();
 
         // Inizializza i risultati
-        var results = new ConcurrentBag<CoffeeBreakResults>();
+        var results = new ConcurrentHashSet<CoffeeBreakResults>();
         var initialState = new CoffeeBreakState
         {
             Hour = 0,
@@ -65,7 +66,15 @@ public static class Calculator
             minimumSorceryPoints,
             minimumWarlockSlots);
 
-        return results;
+        var filtered = results.OrderByDescending(r => r.Level5)
+                      .ThenByDescending(r => r.Level4)
+                      .ThenByDescending(r => r.Level3)
+                      .ThenByDescending(r => r.Level2)
+                      .ThenByDescending(r => r.Level1)
+                      .ThenBy(r => r.ActionsTaken?.Count)
+                      .ToHashSet();
+
+        return filtered;
     }
 
     private static bool CanGenerateAtLeastOneSlot(
@@ -88,7 +97,7 @@ public static class Calculator
     // Metodo ricorsivo con memoization e potatura avanzata
     private static void SimulateActions(
         CoffeeBreakState state,
-        ConcurrentBag<CoffeeBreakResults> results,
+        ConcurrentHashSet<CoffeeBreakResults> results,
         int warlockSlotNumberTotal,
         int warlockSlotLevel,
         int sorceryPointsTotal,
@@ -108,7 +117,6 @@ public static class Calculator
             state.Spells.Level3,
             state.Spells.Level4,
             state.Spells.Level5);
-
 
         // Verifica se lo stato è già stato elaborato
         if (!StateCache.TryAdd(stateKey, true))
@@ -175,15 +183,26 @@ public static class Calculator
                     var newState = CoffeeBreakState.CloneState(state);
                     newState.SorceryPoints -= capturedCost;
 
-                    newState.Spells = capturedLevel switch
+                    // Clona l'oggetto Spells per evitare modifiche indesiderate
+                    newState.Spells = newState.Spells.Clone();
+                    switch (capturedLevel)
                     {
-                        1 => newState.Spells with { Level1 = newState.Spells.Level1 + 1 },
-                        2 => newState.Spells with { Level2 = newState.Spells.Level2 + 1 },
-                        3 => newState.Spells with { Level3 = newState.Spells.Level3 + 1 },
-                        4 => newState.Spells with { Level4 = newState.Spells.Level4 + 1 },
-                        5 => newState.Spells with { Level5 = newState.Spells.Level5 + 1 },
-                        _ => newState.Spells
-                    };
+                        case 1:
+                            newState.Spells.Level1 += 1;
+                            break;
+                        case 2:
+                            newState.Spells.Level2 += 1;
+                            break;
+                        case 3:
+                            newState.Spells.Level3 += 1;
+                            break;
+                        case 4:
+                            newState.Spells.Level4 += 1;
+                            break;
+                        case 5:
+                            newState.Spells.Level5 += 1;
+                            break;
+                    }
 
                     newState.Actions.Add(new CoffeeBreakActions
                     {
@@ -205,7 +224,6 @@ public static class Calculator
                 }));
             }
         }
-
 
         // 3. Usa Blood Well Vial, se possibile
         if (!state.BloodWellVialUsed && state.SorceryPoints < sorceryPointsTotal)
@@ -303,7 +321,7 @@ public static class Calculator
     // Metodo ripristinato e aggiornato
     private static void PerformEndOfRestBonusActions(
         CoffeeBreakState state,
-        ConcurrentBag<CoffeeBreakResults> results,
+        ConcurrentHashSet<CoffeeBreakResults> results,
         int warlockSlotNumberTotal,
         int warlockSlotLevel,
         int sorceryPointsTotal,
@@ -346,23 +364,21 @@ public static class Calculator
             // Converte i punti stregoneria in slot incantesimo
             ConvertSorceryPointsToSpellSlots(newState, minimumSorceryPoints);
 
-            //Check if at least one state managed to create at least one spell slot
-            if (newState.Spells.Level1 > 0 || newState.Spells.Level2 > 0 || newState.Spells.Level3 > 0 ||
-                 newState.Spells.Level4 > 0 || newState.Spells.Level5 > 0)
-            {
-                var test = true;
-            }
-
-                // Verifica se lo stato soddisfa i requisiti minimi
-                if (newState.SorceryPoints >= minimumSorceryPoints && newState.WarlockSlots >= minimumWarlockSlots &&
+            // Verifica se lo stato soddisfa i requisiti minimi
+            if (newState.SorceryPoints >= minimumSorceryPoints && newState.WarlockSlots >= minimumWarlockSlots &&
                 (newState.Spells.Level1 > 0 || newState.Spells.Level2 > 0 || newState.Spells.Level3 > 0 ||
                  newState.Spells.Level4 > 0 || newState.Spells.Level5 > 0))
             {
-                var resultSpells = newState.Spells with
+                var resultSpells = new CoffeeBreakResults
                 {
+                    Level1 = newState.Spells.Level1,
+                    Level2 = newState.Spells.Level2,
+                    Level3 = newState.Spells.Level3,
+                    Level4 = newState.Spells.Level4,
+                    Level5 = newState.Spells.Level5,
                     RemainingSorceryPoints = newState.SorceryPoints,
                     RemainingWarlockSlots = newState.WarlockSlots,
-                    ActionsTaken = newState.Actions
+                    ActionsTaken = new List<CoffeeBreakActions>(newState.Actions)
                 };
                 results.Add(resultSpells);
             }
@@ -386,15 +402,24 @@ public static class Calculator
                 {
                     state.SorceryPoints -= cost;
 
-                    state.Spells = level switch
+                    switch (level)
                     {
-                        1 => state.Spells with { Level1 = state.Spells.Level1 + 1 },
-                        2 => state.Spells with { Level2 = state.Spells.Level2 + 1 },
-                        3 => state.Spells with { Level3 = state.Spells.Level3 + 1 },
-                        4 => state.Spells with { Level4 = state.Spells.Level4 + 1 },
-                        5 => state.Spells with { Level5 = state.Spells.Level5 + 1 },
-                        _ => state.Spells
-                    };
+                        case 1:
+                            state.Spells.Level1 += 1;
+                            break;
+                        case 2:
+                            state.Spells.Level2 += 1;
+                            break;
+                        case 3:
+                            state.Spells.Level3 += 1;
+                            break;
+                        case 4:
+                            state.Spells.Level4 += 1;
+                            break;
+                        case 5:
+                            state.Spells.Level5 += 1;
+                            break;
+                    }
 
                     state.Actions.Add(new CoffeeBreakActions
                     {

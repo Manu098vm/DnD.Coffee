@@ -1,12 +1,14 @@
 ﻿using DnD.Coffee.Core;
 using System.Diagnostics;
 
-namespace DnD.Coffee.ConsoleApp;
+namespace Dnd.Coffee.ConsoleApp;
 
 public class Program
 {
     public static void Main()
     {
+        Console.WriteLine($"DnD.Cofee 0.1 by Manu098vm {Environment.NewLine}");
+
         // Example input
         int warlockSlotNumberTotal = 2;
         int warlockSlotNumberCurrent = 2;
@@ -15,7 +17,7 @@ public class Program
         int sorceryPointsCurrent = 5;
         bool hasPactKeeperRod = true;
         bool hasBloodWellVial = true;
-        int sleepHoursTotal = 4;
+        int sleepHoursTotal = 20;
 
         // Configurable minimum resource requirements
         int minimumSorceryPoints = 5; // Minimum Sorcery Points at the end of rest
@@ -39,14 +41,8 @@ public class Program
         timer.Stop();
         Console.WriteLine($"Completed. Found {results.Count} possible combinations in {timer.Elapsed}\n");
 
-        var filtered = results.OrderByDescending(r => r.Level5)
-                              .ThenByDescending(r => r.Level4)
-                              .ThenByDescending(r => r.Level3)
-                              .ThenByDescending(r => r.Level2)
-                              .ThenByDescending(r => r.Level1)
-                              .ToHashSet();
 
-        foreach (var (result, i) in filtered.Select((result, i) => (result, i)))
+        foreach (var (result, i) in results.Select((result, i) => (result, i)))
         {
             Console.WriteLine($"Option {i}:{Environment.NewLine}{result}");
         }
