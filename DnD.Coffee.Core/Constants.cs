@@ -10,7 +10,6 @@ public static class Constants
     public const int PactRodSpellSlotsGain = 1;
     public const int BloodVialSorceryPointsGain = 5;
 
-    // Gets the Sorcery Point cost for a spell slot of a given level
     public static int GetSpellSlotCost(int level)
     {
         return level switch

@@ -5,11 +5,23 @@ namespace DnD.Coffee.Core;
 
 public static class Calculator
 {
-    // Cache per la memoization
+    // Memoization
     private static readonly ConcurrentDictionary<StateKey, bool> StateCache = new();
 
+    public record StateKey(
+    int Hour,
+    int SorceryPoints,
+    int WarlockSlots,
+    bool PactKeeperRodUsed,
+    bool BloodWellVialUsed,
+    int Level1Spells,
+    int Level2Spells,
+    int Level3Spells,
+    int Level4Spells,
+    int Level5Spells);
+
     /// <summary>
-    /// Calcola tutte le possibili combinazioni di slot incantesimo universali che possono essere creati durante il riposo.
+    /// Calcola tutte le possibili combinazioni di slot incantesimo universali che possono essere creati durante un riposo.
     /// </summary>
     public static HashSet<CoffeeBreakResults> CalculateSpellSlots(
         int warlockSlotNumberTotal,
@@ -24,7 +36,7 @@ public static class Calculator
         int minimumWarlockSlots)
     {
         if (sleepHours < 1)
-            return new HashSet<CoffeeBreakResults>();
+            return [];
 
         StateCache.Clear();
 
@@ -40,7 +52,7 @@ public static class Calculator
             minimumSorceryPoints);
 
         if (!canGenerateSlots)
-            return new HashSet<CoffeeBreakResults>();
+            return [];
 
         // Inizializza i risultati
         var results = new ConcurrentHashSet<CoffeeBreakResults>();
@@ -52,7 +64,7 @@ public static class Calculator
             PactKeeperRodUsed = !pactKeeperRod,
             BloodWellVialUsed = !bloodWellVial,
             Spells = new CoffeeBreakResults(),
-            Actions = new List<CoffeeBreakActions> { new() { ActionType = CoffeeBreakActionType.StartRest } }
+            Actions = [new() { ActionType = CoffeeBreakActionType.StartRest }]
         };
 
         // Avvia la ricerca delle combinazioni
@@ -94,7 +106,7 @@ public static class Calculator
         return (sorceryPointsCurrent + potentialSorceryPoints) >= (minimumSorceryPoints + Constants.Level1Cost);
     }
 
-    // Metodo ricorsivo con memoization e potatura avanzata
+    // Metodo ricorsivo con memoization e potatura
     private static void SimulateActions(
         CoffeeBreakState state,
         ConcurrentHashSet<CoffeeBreakResults> results,
@@ -174,7 +186,6 @@ public static class Calculator
             int cost = Constants.GetSpellSlotCost(level);
             if (state.SorceryPoints - cost >= 0)
             {
-                // Cattura le variabili locali
                 int capturedLevel = level;
                 int capturedCost = cost;
 
@@ -182,8 +193,6 @@ public static class Calculator
                 {
                     var newState = CoffeeBreakState.CloneState(state);
                     newState.SorceryPoints -= capturedCost;
-
-                    // Clona l'oggetto Spells per evitare modifiche indesiderate
                     newState.Spells = newState.Spells.Clone();
                     switch (capturedLevel)
                     {
@@ -225,7 +234,7 @@ public static class Calculator
             }
         }
 
-        // 3. Usa Blood Well Vial, se possibile
+        // 3. Usa la Blood Well Vial, se possibile
         if (!state.BloodWellVialUsed && state.SorceryPoints < sorceryPointsTotal)
         {
             tasks.Add(Task.Run(() =>
@@ -256,7 +265,7 @@ public static class Calculator
             }));
         }
 
-        // 4. Usa Pact Keeper Rod, se possibile
+        // 4. Usa la Pact Keeper Rod, se possibile
         if (!state.PactKeeperRodUsed && state.WarlockSlots < warlockSlotNumberTotal)
         {
             tasks.Add(Task.Run(() =>
@@ -302,7 +311,7 @@ public static class Calculator
             });
         }
 
-        // Continua la ricorsione
+        // Reitera
         tasks.Add(Task.Run(() =>
             SimulateActions(
                 nextState,
@@ -314,11 +323,10 @@ public static class Calculator
                 minimumSorceryPoints,
                 minimumWarlockSlots)));
 
-        // Attende il completamento di tutti i task
-        Task.WaitAll(tasks.ToArray());
+        Task.WaitAll([.. tasks]);
     }
 
-    // Metodo ripristinato e aggiornato
+    // Alla fine del riposo, è ancora possibile eseguire azioni per recuperare Slot Warlock o Punti Stregoneria
     private static void PerformEndOfRestBonusActions(
         CoffeeBreakState state,
         ConcurrentHashSet<CoffeeBreakResults> results,
@@ -340,7 +348,7 @@ public static class Calculator
             });
         }
 
-        // Tenta di spendere gli slot Warlock ripristinati
+        // Tenta di spendere gli slot ripristinati, se rimangono entro il minimo di Punti Stregoneria e Slot da Warlock
         int maxSpendableWarlockSlots = state.WarlockSlots - minimumWarlockSlots;
 
         for (int slotsToSpend = maxSpendableWarlockSlots; slotsToSpend >= 0; slotsToSpend--)
@@ -364,7 +372,7 @@ public static class Calculator
             // Converte i punti stregoneria in slot incantesimo
             ConvertSorceryPointsToSpellSlots(newState, minimumSorceryPoints);
 
-            // Verifica se lo stato soddisfa i requisiti minimi
+            // Verifica i requisiti minimi per i Punti Stregoneria e gli Slot da Warlock
             if (newState.SorceryPoints >= minimumSorceryPoints && newState.WarlockSlots >= minimumWarlockSlots &&
                 (newState.Spells.Level1 > 0 || newState.Spells.Level2 > 0 || newState.Spells.Level3 > 0 ||
                  newState.Spells.Level4 > 0 || newState.Spells.Level5 > 0))
@@ -436,17 +444,3 @@ public static class Calculator
         }
     }
 }
-
-// Definizione della chiave di stato per la cache
-public record StateKey(
-    int Hour,
-    int SorceryPoints,
-    int WarlockSlots,
-    bool PactKeeperRodUsed,
-    bool BloodWellVialUsed,
-    int Level1Spells,
-    int Level2Spells,
-    int Level3Spells,
-    int Level4Spells,
-    int Level5Spells);
-
