@@ -8,23 +8,24 @@ public class CoffeeBreakTests
     public void CalculateSpellSlots_ShouldReturnEmpty_WhenSleepHoursLessThanOne()
     {
         // Arrange
-        int warlockSlotNumberTotal = 2;
-        int warlockSlotNumberCurrent = 0;
-        int warlockSlotLevel = 2;
-        int sorceryPointsTotal = 5;
-        int sorceryPointsCurrent = 0;
-        bool pactKeeperRod = true;
-        bool bloodWellVial = true;
-        int sleepHours = 0;
-        int minimumSorceryPoints = 5;
-        int minimumWarlockSlots = 2;
+        var character = new Character
+        {
+            WarlockLevel = 3,
+            SorcererLevel = 5
+        };
+
+        var warlockSlotNumberCurrent = 0;
+        var sorceryPointsCurrent = 0;
+        var pactKeeperRod = true;
+        var bloodWellVial = true;
+        var sleepHours = 0;
+        var minimumSorceryPoints = 0;
+        var minimumWarlockSlots = 0;
 
         // Act
         var result = Calculator.CalculateSpellSlots(
-            warlockSlotNumberTotal,
+            character,
             warlockSlotNumberCurrent,
-            warlockSlotLevel,
-            sorceryPointsTotal,
             sorceryPointsCurrent,
             pactKeeperRod,
             bloodWellVial,
@@ -40,23 +41,24 @@ public class CoffeeBreakTests
     public void CalculateSpellSlots_ShouldReturnValidResults_WhenValidInput()
     {
         // Arrange
-        int warlockSlotNumberTotal = 2;
-        int warlockSlotNumberCurrent = 0;
-        int warlockSlotLevel = 2;
-        int sorceryPointsTotal = 5;
-        int sorceryPointsCurrent = 0;
-        bool pactKeeperRod = true;
-        bool bloodWellVial = true;
-        int sleepHours = 4;
-        int minimumSorceryPoints = 5;
-        int minimumWarlockSlots = 2;
+        var character = new Character
+        {
+            WarlockLevel = 3,
+            SorcererLevel = 5
+        };
+
+        var warlockSlotNumberCurrent = 0;
+        var sorceryPointsCurrent = 0;
+        var pactKeeperRod = true;
+        var bloodWellVial = true;
+        var sleepHours = 4;
+        var minimumSorceryPoints = 5;
+        var minimumWarlockSlots = 2;
 
         // Act
         var result = Calculator.CalculateSpellSlots(
-            warlockSlotNumberTotal,
+            character,
             warlockSlotNumberCurrent,
-            warlockSlotLevel,
-            sorceryPointsTotal,
             sorceryPointsCurrent,
             pactKeeperRod,
             bloodWellVial,
@@ -68,7 +70,6 @@ public class CoffeeBreakTests
         Assert.NotEmpty(result);
         foreach (var spells in result)
         {
-            //Assert.True(result.Count is 39);
             Assert.True(spells.RemainingSorceryPoints >= minimumSorceryPoints);
             Assert.True(spells.RemainingWarlockSlots >= minimumWarlockSlots);
         }

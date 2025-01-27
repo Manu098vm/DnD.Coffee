@@ -43,10 +43,8 @@ public class Program
         timer.Start();
 
         var results = Calculator.CalculateSpellSlots(
-            character.GetWarlockSlotNumberTotal(),
+            character,
             warlockSlotNumberCurrent,
-            character.GetWarlockSlotLevel(),
-            character.GetSorceryPointsTotal(),
             sorceryPointsCurrent,
             hasPactKeeperRod,
             hasBloodWellVial,
