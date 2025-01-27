@@ -9,10 +9,10 @@ public class Program
     {
         // Example input
         int warlockSlotNumberTotal = 2;
-        int warlockSlotNumberCurrent = 1;
+        int warlockSlotNumberCurrent = 2;
         int warlockSlotLevel = 2;
         int sorceryPointsTotal = 5;
-        int sorceryPointsCurrent = 0;
+        int sorceryPointsCurrent = 5;
         bool hasPactKeeperRod = true;
         bool hasBloodWellVial = true;
         int sleepHoursTotal = 4;
@@ -39,10 +39,19 @@ public class Program
         timer.Stop();
         Console.WriteLine($"Completed. Found {results.Count} possible combinations in {timer.Elapsed}\n");
 
-        foreach (var result in results)
+        var filtered = results.OrderByDescending(r => r.Level5)
+                              .ThenByDescending(r => r.Level4)
+                              .ThenByDescending(r => r.Level3)
+                              .ThenByDescending(r => r.Level2)
+                              .ThenByDescending(r => r.Level1)
+                              .ToHashSet();
+
+        foreach (var (result, i) in filtered.Select((result, i) => (result, i)))
         {
-            Console.WriteLine(result);
+            Console.WriteLine($"Option {i}:{Environment.NewLine}{result}");
         }
+
+        Console.WriteLine("Press any key to exit...");
         Console.ReadKey();
     }
 }

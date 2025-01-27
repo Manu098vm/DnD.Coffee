@@ -11,7 +11,6 @@ public enum CoffeeBreakActionType
     EndOfRestBonusConversion
 }
 
-
 public class CoffeeBreakActions
 {
     public CoffeeBreakActionType ActionType { get; set; }
@@ -24,9 +23,9 @@ public class CoffeeBreakActions
     {
         return ActionType switch
         {
-            CoffeeBreakActionType.StartRest => "Start Rest",
+            CoffeeBreakActionType.StartRest => $"Hour {Hour}: Start Rest",
             CoffeeBreakActionType.ConvertWarlockSlotIntoSorceryPoints => $"Hour {Hour}: Converted 1 Warlock slot into {SorceryPointsChanged} Sorcery Point(s)",
-            CoffeeBreakActionType.ConvertSorceryPointsIntoSpellSlot => $"Hour {Hour}: Created Level {SpellSlotLevel} Spell Slot using {SorceryPointsChanged} Sorcery Point(s)",
+            CoffeeBreakActionType.ConvertSorceryPointsIntoSpellSlot => $"Hour {Hour}: Created Level {SpellSlotLevel} Spell Slot using {Math.Abs(SorceryPointsChanged ?? 0)} Sorcery Point(s)",
             CoffeeBreakActionType.UsePactRod => $"Hour {Hour}: Used Pact Rod to recover {WarlockSlotsChanged} Warlock Slot(s)",
             CoffeeBreakActionType.UseBloodVial => $"Hour {Hour}: Used Blood Vial to recover {SorceryPointsChanged} Sorcery Point(s)",
             CoffeeBreakActionType.RestoreWarlockSlots => $"Hour {Hour}: Restored Warlock Slots to {WarlockSlotsChanged}",
