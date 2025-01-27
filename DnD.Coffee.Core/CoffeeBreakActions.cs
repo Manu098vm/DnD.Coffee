@@ -29,7 +29,7 @@ public class CoffeeBreakActions
             CoffeeBreakActionType.UsePactRod => $"Hour {Hour}: Used Pact Rod to recover {WarlockSlotsChanged} Warlock Slot",
             CoffeeBreakActionType.UseBloodVial => $"Hour {Hour}: Used Blood Vial to recover {SorceryPointsChanged} Sorcery Points",
             CoffeeBreakActionType.RestoreWarlockSlots => $"Hour {Hour}: Restored Warlock Slots to {WarlockSlotsChanged}",
-            CoffeeBreakActionType.EndOfRestBonusConversion => $"End of Rest: Converted {WarlockSlotsChanged} Warlock Slot(s) into {SorceryPointsChanged} Sorcery Points",
+            CoffeeBreakActionType.EndOfRestBonusConversion => $"Hour {Hour}: Converted {Math.Abs(WarlockSlotsChanged ?? 0)} Warlock Slot(s) into {SorceryPointsChanged} Sorcery Points",
             _ => "Unknown Action"
         };
     }
