@@ -59,7 +59,7 @@ public class Program
             SortingCriteria.Level1Slots);
 
         timer.Stop();
-        Console.WriteLine($"{Environment.NewLine}Completed. Found {results.Count()} possible combinations in {timer.Elapsed}\n");
+        Console.WriteLine($"{Environment.NewLine}Completed. Found {results.Count()} optimal combinations in {timer.Elapsed}\n");
 
         try
         {

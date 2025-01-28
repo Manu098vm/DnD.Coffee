@@ -102,8 +102,8 @@ public static class CoffeeBreakResultsSorter
     {
         bool strictlyBetterInAtLeastOneLevel = false;
 
-        int[] xLevels = { x.Level1, x.Level2, x.Level3, x.Level4, x.Level5 };
-        int[] yLevels = { y.Level1, y.Level2, y.Level3, y.Level4, y.Level5 };
+        int[] xLevels = [x.Level1, x.Level2, x.Level3, x.Level4, x.Level5];
+        int[] yLevels = [y.Level1, y.Level2, y.Level3, y.Level4, y.Level5];
 
         for (var i = 0; i < xLevels.Length; i++)
         {
