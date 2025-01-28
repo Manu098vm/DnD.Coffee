@@ -31,7 +31,8 @@ public static class Calculator
         bool bloodWellVial,
         int sleepHours,
         int minimumSorceryPoints,
-        int minimumWarlockSlots)
+        int minimumWarlockSlots,
+        params SortingCriteria[] criteria)
     {
         if (sleepHours < 1)
             return [];
@@ -80,15 +81,9 @@ public static class Calculator
             minimumSorceryPoints,
             minimumWarlockSlots);
 
-        var filtered = results.OrderByDescending(r => r.Level5)
-                      .ThenByDescending(r => r.Level4)
-                      .ThenByDescending(r => r.Level3)
-                      .ThenByDescending(r => r.Level2)
-                      .ThenByDescending(r => r.Level1)
-                      .ThenBy(r => r.ActionsTaken?.Count)
-                      .ToHashSet();
+        var sortedResults = CoffeeBreakResultsSorter.SortResults(results,criteria).ToHashSet();
 
-        return filtered;
+        return sortedResults;
     }
 
     private static bool CanGenerateAtLeastOneSlot(

@@ -50,7 +50,13 @@ public class Program
             hasBloodWellVial,
             sleepHoursTotal,
             minimumSorceryPoints,
-            minimumWarlockSlots);
+            minimumWarlockSlots,
+            SortingCriteria.Level5Slots,
+            SortingCriteria.Level4Slots,
+            SortingCriteria.Level3Slots,
+            SortingCriteria.TotalSlots,
+            SortingCriteria.Level2Slots,
+            SortingCriteria.Level1Slots);
 
         timer.Stop();
         Console.WriteLine($"{Environment.NewLine}Completed. Found {results.Count} possible combinations in {timer.Elapsed}\n");
