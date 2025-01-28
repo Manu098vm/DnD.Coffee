@@ -44,6 +44,5 @@ To ensure everyone has a good time, always discuss your Coffeelock plans with yo
 
 ## To-Do List:
 
-Develop a GUI Desktop Application.
-
-Create a Mobile Application.
+- GUI Desktop Application.
+- Mobile Application.
