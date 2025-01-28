@@ -59,7 +59,7 @@ public class Program
             SortingCriteria.Level1Slots);
 
         timer.Stop();
-        Console.WriteLine($"{Environment.NewLine}Completed. Found {results.Count} possible combinations in {timer.Elapsed}\n");
+        Console.WriteLine($"{Environment.NewLine}Completed. Found {results.Count()} possible combinations in {timer.Elapsed}\n");
 
         try
         {
@@ -67,7 +67,7 @@ public class Program
             if (int.TryParse(Console.ReadLine(), out int resultsToShow))
             {
                 Console.WriteLine("");
-                for (int i = 0; i < resultsToShow && i < results.Count; i++)
+                for (int i = 0; i < resultsToShow && i < results.Count(); i++)
                 {
                     Console.WriteLine($"Option {i + 1}:");
                     Console.WriteLine(results.ElementAt(i));

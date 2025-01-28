@@ -61,10 +61,58 @@ public class CoffeeBreakResultsComparer(IEnumerable<SortingCriteria> criteria) :
 public static class CoffeeBreakResultsSorter
 {
     public static IEnumerable<CoffeeBreakResults> SortResults(
-        IEnumerable<CoffeeBreakResults> results,
+        this IEnumerable<CoffeeBreakResults> results,
         params SortingCriteria[] criteria)
     {
         var comparer = new CoffeeBreakResultsComparer(criteria);
         return results.OrderBy(r => r, comparer);
+    }
+
+    public static IEnumerable<CoffeeBreakResults> FilterOptimalResults(this IEnumerable<CoffeeBreakResults> results)
+    {
+        var resultList = results.ToList();
+        var optimalResults = new List<CoffeeBreakResults>();
+
+        for (var i = 0; i < resultList.Count; i++)
+        {
+            var currentResult = resultList[i];
+            var isOptimal = true;
+
+            for (var j = 0; j < resultList.Count; j++)
+            {
+                if (i == j)
+                    continue;
+
+                var comparisonResult = resultList[j];
+                if (IsBetterOrEqualInAllLevels(comparisonResult, currentResult))
+                {
+                    isOptimal = false;
+                    break;
+                }
+            }
+
+            if (isOptimal)
+                optimalResults.Add(currentResult);
+        }
+
+        return optimalResults;
+    }
+
+    private static bool IsBetterOrEqualInAllLevels(CoffeeBreakResults x, CoffeeBreakResults y)
+    {
+        bool strictlyBetterInAtLeastOneLevel = false;
+
+        int[] xLevels = { x.Level1, x.Level2, x.Level3, x.Level4, x.Level5 };
+        int[] yLevels = { y.Level1, y.Level2, y.Level3, y.Level4, y.Level5 };
+
+        for (var i = 0; i < xLevels.Length; i++)
+        {
+            if (xLevels[i] < yLevels[i])
+                return false;
+            else if (xLevels[i] > yLevels[i])
+                strictlyBetterInAtLeastOneLevel = true;
+        }
+
+        return strictlyBetterInAtLeastOneLevel;
     }
 }

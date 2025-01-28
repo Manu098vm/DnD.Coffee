@@ -23,7 +23,7 @@ public static class Calculator
     /// <summary>
     /// Calcola tutte le possibili combinazioni di slot incantesimo universali che possono essere creati durante un riposo.
     /// </summary>
-    public static HashSet<CoffeeBreakResults> CalculateSpellSlots(
+    public static IEnumerable<CoffeeBreakResults> CalculateSpellSlots(
         Character character,
         int warlockSlotNumberCurrent,
         int sorceryPointsCurrent,
@@ -81,7 +81,7 @@ public static class Calculator
             minimumSorceryPoints,
             minimumWarlockSlots);
 
-        var sortedResults = CoffeeBreakResultsSorter.SortResults(results,criteria).ToHashSet();
+        var sortedResults = results.FilterOptimalResults().SortResults(criteria);
 
         return sortedResults;
     }
