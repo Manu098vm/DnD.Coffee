@@ -7,9 +7,14 @@ public class CoffeeBreakResults
     public int Level3 { get; set; }
     public int Level4 { get; set; }
     public int Level5 { get; set; }
+
+    public int TotalSpellSlots => Level1 + Level2 + Level3 + Level4 + Level5;
+
     public int RemainingSorceryPoints { get; set; }
     public int RemainingWarlockSlots { get; set; }
+
     public List<CoffeeBreakActions>? ActionsTaken { get; set; }
+
     public int Hash => GetHashCode();
 
     public CoffeeBreakResults Clone()
@@ -49,13 +54,13 @@ public class CoffeeBreakResults
     {
         if (obj is CoffeeBreakResults other)
         {
-            return Level1 <= other.Level1 &&
-                   Level2 <= other.Level2 &&
-                   Level3 <= other.Level3 &&
-                   Level4 <= other.Level4 &&
-                   Level5 <= other.Level5 &&
-                   RemainingSorceryPoints <= other.RemainingSorceryPoints &&
-                   RemainingWarlockSlots <= other.RemainingWarlockSlots;
+            return Level1 == other.Level1 &&
+                   Level2 == other.Level2 &&
+                   Level3 == other.Level3 &&
+                   Level4 == other.Level4 &&
+                   Level5 == other.Level5 &&
+                   RemainingSorceryPoints == other.RemainingSorceryPoints &&
+                   RemainingWarlockSlots == other.RemainingWarlockSlots;
         }
         return false;
     }
