@@ -50,16 +50,26 @@ public class Program
             hasBloodWellVial,
             sleepHoursTotal,
             minimumSorceryPoints,
-            minimumWarlockSlots,
+            minimumWarlockSlots
+        );
+
+        timer.Stop();
+        Console.WriteLine($"{Environment.NewLine}Completed. Found {results.Count()} combinations in {timer.Elapsed}{Environment.NewLine}");
+
+        Console.WriteLine("Refining results...");
+        timer.Restart();
+
+        var sortedResults = results.FilterOptimalResults().SortResults(
             SortingCriteria.Level5Slots,
             SortingCriteria.Level4Slots,
             SortingCriteria.Level3Slots,
             SortingCriteria.TotalSlots,
             SortingCriteria.Level2Slots,
-            SortingCriteria.Level1Slots);
+            SortingCriteria.Level1Slots
+        );
 
         timer.Stop();
-        Console.WriteLine($"{Environment.NewLine}Completed. Found {results.Count()} optimal combinations in {timer.Elapsed}\n");
+        Console.WriteLine($"{Environment.NewLine}Optimized to {sortedResults.Count()} results in {timer.Elapsed}{Environment.NewLine}");
 
         try
         {
@@ -67,10 +77,10 @@ public class Program
             if (int.TryParse(Console.ReadLine(), out int resultsToShow))
             {
                 Console.WriteLine("");
-                for (int i = 0; i < resultsToShow && i < results.Count(); i++)
+                for (int i = 0; i < resultsToShow && i < sortedResults.Count(); i++)
                 {
                     Console.WriteLine($"Option {i + 1}:");
-                    Console.WriteLine(results.ElementAt(i));
+                    Console.WriteLine(sortedResults.ElementAt(i));
                 }
             }
             else

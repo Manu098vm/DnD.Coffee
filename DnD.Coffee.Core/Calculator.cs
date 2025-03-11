@@ -31,8 +31,7 @@ public static class Calculator
         bool bloodWellVial,
         int sleepHours,
         int minimumSorceryPoints,
-        int minimumWarlockSlots,
-        params SortingCriteria[] criteria)
+        int minimumWarlockSlots)
     {
         if (sleepHours < 1)
             return [];
@@ -81,9 +80,7 @@ public static class Calculator
             minimumSorceryPoints,
             minimumWarlockSlots);
 
-        var sortedResults = results.FilterOptimalResults().SortResults(criteria);
-
-        return sortedResults;
+        return results;
     }
 
     private static bool CanGenerateAtLeastOneSlot(
