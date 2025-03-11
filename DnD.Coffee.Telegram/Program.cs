@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using DnD.Coffee.Core;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
@@ -16,6 +14,7 @@ namespace DnD.Coffee.Telegram
             string token;
             var tokenTextPath = Path.Combine(Environment.CurrentDirectory, "token.config");
 
+            // Check if token file exists, if not, ask for token and save it to file
             while (!File.Exists(tokenTextPath))
             {
                 Console.WriteLine("Please input a valid Telegram Bot Token:");
@@ -23,6 +22,7 @@ namespace DnD.Coffee.Telegram
                 File.WriteAllText(tokenTextPath, token);
             }
 
+            // Load token from config file, start the bot
             token = File.ReadAllText(tokenTextPath);
             var botClient = new TelegramBotClient(token);
 
