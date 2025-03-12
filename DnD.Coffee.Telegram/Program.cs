@@ -103,6 +103,21 @@ public class Program
                     case "/rest":
                         await ProcessRest(botClient, chatId, cancellationToken);
                         break;
+                    case "/start":
+                        await botClient.SendMessage(chatId, "Welcome! Please use /newpg to create a new character.", cancellationToken: cancellationToken);
+                        break;
+                    case "/help":
+                        await botClient.SendMessage(
+                            chatId,
+                            $"Commands:{Environment.NewLine}" +
+                            $"/newpg - Register a new character{Environment.NewLine}" +
+                            $"/selectpg - Select an active character{Environment.NewLine}" +
+                            $"/editpg - Modify or level up your active character{Environment.NewLine}" +
+                            $"/viewpg - View your active character details{Environment.NewLine}" +
+                            $"/removepg - Remove your active character{Environment.NewLine}" +
+                            $"/rest - Calculate and optimize the best spell slot combinations{Environment.NewLine}",
+                            cancellationToken: cancellationToken);
+                        break;
                     default:
                         await botClient.SendMessage(chatId, "Command not recognized.", cancellationToken: cancellationToken);
                         break;
