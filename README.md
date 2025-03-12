@@ -41,9 +41,3 @@ Input these into the program, and it will compute all the optimal combinations f
 IMHO the Coffeelock isn't inherently more powerful than other builds—just more versatile. However, while squeezing every ounce of optimization out of your character can be incredibly fun, it's worth remembering that **Dungeons & Dragons is a game meant to be enjoyed by everyone at the table, not just us min-maxers**.
 
 To ensure everyone has a good time, always discuss your Coffeelock plans with your Dungeon Master and fellow players beforehand. By keeping your DM in the loop, you not only foster a more enjoyable game but also potentially avoid the surprise of facing a horde of beholders sent your way as a balancing act. After all, a happy party makes for the best adventures!
-
-## To-Do List:
-
-Develop a GUI Desktop Application.
-
-Create a Mobile Application.
